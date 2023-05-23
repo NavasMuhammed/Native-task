@@ -61,7 +61,16 @@ const MyList = () => {
           color="gray"
         />
       )}
-      <Text style={styles.itemTitle}>{item.description}</Text>
+      <View>
+        <View style={styles.imageContainer}>
+          <Image
+            style={item.selected ? styles.imageSelected : styles.image}
+            source={{ uri: item.url }}
+            key={item.id}
+          />
+        </View>
+        <Text style={styles.itemTitle}>{item.description}</Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -92,29 +101,39 @@ const MyList = () => {
 };
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    borderWidth: 1,
+    borderRadius: 10,
+    position: "relative",
+    overflow: "hidden",
+  },
   image: {
     width: 200,
     height: 200,
     borderWidth: 1,
-    borderColor: "red",
+  },
+  imageSelected: {
+    width: 200,
+    height: 200,
+    borderWidth: 1,
+    opacity: 0.1,
   },
   listItem: {
-    flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    gap: 10,
+    gap: 20,
   },
   itemTitle: {
     width: 200,
-    height: 150,
-    borderWidth: 1,
+    textAlign: "center",
+    marginTop: 5,
   },
   radioIcon: {
     position: "absolute",
     zIndex: 1,
     left: "95%",
-    top: "85%",
+    top: "8%",
   },
   searchContainer: {
     justifyContent: "center",
@@ -128,7 +147,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     paddingHorizontal: 20,
-    color: "blue",
   },
 });
 
