@@ -8,16 +8,19 @@ import {
 } from "react-native";
 import MyList from "./components/list";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { Provider } from "react-redux";
+import store from "./redux/store";
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.mainTitle}>Search</Text>
-      <View style={styles.listContainer}>
-        <MyList />
-      </View>
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <Provider store={store}>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.mainTitle}>Search</Text>
+        <View style={styles.listContainer}>
+          <MyList />
+        </View>
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    </Provider>
   );
 }
 

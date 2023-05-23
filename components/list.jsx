@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   FlatList,
@@ -6,23 +6,29 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchApiData } from "../redux/apiSlice";
 
 const MyList = () => {
-  const [data, setData] = useState([
-    { id: 1, title: "Item 1", title: "cat", selected: false },
-    { id: 2, title: "Item 2", title: "dog", selected: false },
-    { id: 3, title: "Item 3", title: "man", selected: false },
-    { id: 4, title: "Item 4", title: "women", selected: false },
-    { id: 5, title: "Item 5", title: "car", selected: false },
-  ]);
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.api);
+
+  useEffect(() => {
+    dispatch(fetchApiData());
+  }, [dispatch]);
+
+  const [dataApi, setData] = useState(data);
   const [searchQuery, setSearchQuery] = useState("");
+
   const handleSearch = (text) => {
     setSearchQuery(text);
   };
+
   const handleItemPress = (item) => {
-    const updatedData = data.map((d) => {
+    const updatedData = dataApi.map((d) => {
       if (d.id === item.id) {
         return { ...d, selected: !d.selected };
       }
@@ -30,9 +36,11 @@ const MyList = () => {
     });
     setData(updatedData);
   };
-  const filteredData = data.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+
+  const filteredData = dataApi.filter((item) =>
+    item.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
   const listItem = ({ item }) => (
     <TouchableOpacity
       style={styles.listItem}
@@ -53,7 +61,7 @@ const MyList = () => {
           color="gray"
         />
       )}
-      <Text style={styles.itemTitle}>{item.title}</Text>
+      <Text style={styles.itemTitle}>{item.description}</Text>
     </TouchableOpacity>
   );
 
@@ -67,12 +75,29 @@ const MyList = () => {
           onChangeText={handleSearch}
         />
       </View>
-      <FlatList data={filteredData} renderItem={listItem} />
+      {data && <FlatList data={filteredData} renderItem={listItem} />}
+      {/* {counter && (
+        <View>
+          {data.map((item) => (
+            <Image
+              style={styles.image}
+              source={{ uri: item.url }}
+              key={item.id}
+            />
+          ))}
+        </View>
+      )} */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  image: {
+    width: 200,
+    height: 200,
+    borderWidth: 1,
+    borderColor: "red",
+  },
   listItem: {
     flexDirection: "row",
     alignItems: "center",
