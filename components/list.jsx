@@ -15,12 +15,20 @@ import { fetchApiData } from "../redux/apiSlice";
 const MyList = () => {
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.api);
-
+  const isLoading = useSelector((state) => state.api.isLoading);
+  const error = useSelector((state) => state.api.error);
   useEffect(() => {
     dispatch(fetchApiData());
   }, [dispatch]);
 
-  const [dataApi, setData] = useState(data);
+  const [dataApi, setData] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setData(data);
+    }
+  }, [data]);
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (text) => {
@@ -37,8 +45,10 @@ const MyList = () => {
     setData(updatedData);
   };
 
-  const filteredData = dataApi.filter((item) =>
-    item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = dataApi.filter(
+    (item) =>
+      item.description &&
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const listItem = ({ item }) => (
@@ -74,6 +84,14 @@ const MyList = () => {
     </TouchableOpacity>
   );
 
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text>Error: {error}</Text>;
+  }
+
   return (
     <View style={styles.listContainer}>
       <View style={styles.searchContainer}>
@@ -84,18 +102,9 @@ const MyList = () => {
           onChangeText={handleSearch}
         />
       </View>
-      {data && <FlatList data={filteredData} renderItem={listItem} />}
-      {/* {counter && (
-        <View>
-          {data.map((item) => (
-            <Image
-              style={styles.image}
-              source={{ uri: item.url }}
-              key={item.id}
-            />
-          ))}
-        </View>
-      )} */}
+      {dataApi.length > 0 && (
+        <FlatList data={filteredData} renderItem={listItem} />
+      )}
     </View>
   );
 };
@@ -132,16 +141,17 @@ const styles = StyleSheet.create({
   radioIcon: {
     position: "absolute",
     zIndex: 1,
-    left: "95%",
+    left: "80%",
     top: "8%",
   },
   searchContainer: {
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    width: "100%",
   },
   searchInput: {
-    width: 200,
+    width: 300,
     height: 55,
     borderWidth: 1,
     borderRadius: 30,

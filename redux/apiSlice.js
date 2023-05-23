@@ -6,6 +6,7 @@ const initialState = {
   isLoading: false,
   error: null,
 };
+
 export const fetchApiData = createAsyncThunk("api/fetchData", async () => {
   try {
     const response = await axios.get(
@@ -13,23 +14,17 @@ export const fetchApiData = createAsyncThunk("api/fetchData", async () => {
         "Kc3uHwKhOzAptCjiS_usZhGfA4aQHP17gwcBvuV6g-s"
     );
 
-    jsonData = response.data;
-    // console.log("****");
-    jsonData.forEach((item) => {
-      // console.log("////");
-      // console.log(item.urls.small);
-      // console.log(item.alt_description);
-    });
+    const jsonData = response.data;
     const newArray = jsonData.map((item, index) => ({
       id: index + 1,
       selected: false,
       url: item.urls.small,
       description: item.alt_description,
     }));
-    // console.log(newArray);
+
     return newArray;
   } catch (error) {
-    throw Error("Failed to fetch API data");
+    throw new Error("Failed to fetch API data");
   }
 });
 
@@ -55,4 +50,5 @@ const apiSlice = createSlice({
   },
 });
 
-export default apiSlice.reducer;
+export const apiReducer = apiSlice.reducer;
+export const apiActions = { ...apiSlice.actions };
