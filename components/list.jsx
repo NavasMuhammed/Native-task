@@ -1,24 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   FlatList,
   TouchableOpacity,
   Text,
   StyleSheet,
+  TextInput,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchApiData } from "../redux/apiSlice";
 
 const MyList = () => {
-  const [data, setData] = useState([
-    { id: 1, title: "Item 1", title: "Item 1", selected: false },
-    { id: 2, title: "Item 2", title: "Item 2", selected: false },
-    { id: 3, title: "Item 3", title: "Item 3", selected: false },
-    { id: 4, title: "Item 4", title: "Item 4", selected: false },
-    { id: 5, title: "Item 5", title: "Item 4", selected: false },
-  ]);
+  const dispatch = useDispatch();
+  const { data } = useSelector((state) => state.api);
+  const isLoading = useSelector((state) => state.api.isLoading);
+  const error = useSelector((state) => state.api.error);
+  useEffect(() => {
+    dispatch(fetchApiData());
+  }, [dispatch]);
+
+  const [dataApi, setData] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setData(data);
+    }
+  }, [data]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+  };
 
   const handleItemPress = (item) => {
-    const updatedData = data.map((d) => {
+    const updatedData = dataApi.map((d) => {
       if (d.id === item.id) {
         return { ...d, selected: !d.selected };
       }
@@ -26,6 +44,12 @@ const MyList = () => {
     });
     setData(updatedData);
   };
+
+  const filteredData = dataApi.filter(
+    (item) =>
+      item.description &&
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const listItem = ({ item }) => (
     <TouchableOpacity
@@ -47,35 +71,92 @@ const MyList = () => {
           color="gray"
         />
       )}
-      <Text style={styles.itemTitle}>{item.title}</Text>
+      <View>
+        <View style={styles.imageContainer}>
+          <Image
+            style={item.selected ? styles.imageSelected : styles.image}
+            source={{ uri: item.url }}
+            key={item.id}
+          />
+        </View>
+        <Text style={styles.itemTitle}>{item.description}</Text>
+      </View>
     </TouchableOpacity>
   );
 
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text>Error: {error}</Text>;
+  }
+
   return (
-    <View>
-      <FlatList data={data} renderItem={listItem} />
+    <View style={styles.listContainer}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+      </View>
+      {dataApi.length > 0 && (
+        <FlatList data={filteredData} renderItem={listItem} />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    borderWidth: 1,
+    borderRadius: 10,
+    position: "relative",
+    overflow: "hidden",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderWidth: 1,
+  },
+  imageSelected: {
+    width: 200,
+    height: 200,
+    borderWidth: 1,
+    opacity: 0.1,
+  },
   listItem: {
-    flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    gap: 10,
+    gap: 20,
   },
   itemTitle: {
     width: 200,
-    height: 150,
-    borderWidth: 1,
+    textAlign: "center",
+    marginTop: 5,
   },
   radioIcon: {
     position: "absolute",
     zIndex: 1,
-    left: "95%",
-    top: "85%",
+    left: "80%",
+    top: "8%",
+  },
+  searchContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    width: "100%",
+  },
+  searchInput: {
+    width: 300,
+    height: 55,
+    borderWidth: 1,
+    borderRadius: 30,
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
 });
 
