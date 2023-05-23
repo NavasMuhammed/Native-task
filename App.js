@@ -13,7 +13,6 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.mainTitle}>Search</Text>
-      <View style={styles.searchContainer}></View>
       <View style={styles.listContainer}>
         <MyList />
       </View>
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#c0c0c0",
     alignItems: "center",
-    alignItems: "center",
+    justifyContent: "space-around",
   },
   mainTitle: {
     fontSize: 30,
@@ -39,18 +38,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "90%",
     alignItems: "center",
-    padding: 40,
-  },
-  searchContainer: {
-    flexDirection: "row",
-  },
-  searchInput: {
-    width: 200,
-    height: 35,
-    borderWidth: 1,
-    borderRadius: 20,
-  },
-  searchButton: {
-    borderRadius: 10,
+    // padding: 40,
   },
 });

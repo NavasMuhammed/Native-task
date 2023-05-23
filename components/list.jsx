@@ -5,18 +5,22 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const MyList = () => {
   const [data, setData] = useState([
-    { id: 1, title: "Item 1", title: "Item 1", selected: false },
-    { id: 2, title: "Item 2", title: "Item 2", selected: false },
-    { id: 3, title: "Item 3", title: "Item 3", selected: false },
-    { id: 4, title: "Item 4", title: "Item 4", selected: false },
-    { id: 5, title: "Item 5", title: "Item 4", selected: false },
+    { id: 1, title: "Item 1", title: "cat", selected: false },
+    { id: 2, title: "Item 2", title: "dog", selected: false },
+    { id: 3, title: "Item 3", title: "man", selected: false },
+    { id: 4, title: "Item 4", title: "women", selected: false },
+    { id: 5, title: "Item 5", title: "car", selected: false },
   ]);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+  };
   const handleItemPress = (item) => {
     const updatedData = data.map((d) => {
       if (d.id === item.id) {
@@ -26,7 +30,9 @@ const MyList = () => {
     });
     setData(updatedData);
   };
-
+  const filteredData = data.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   const listItem = ({ item }) => (
     <TouchableOpacity
       style={styles.listItem}
@@ -52,8 +58,16 @@ const MyList = () => {
   );
 
   return (
-    <View>
-      <FlatList data={data} renderItem={listItem} />
+    <View style={styles.listContainer}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+      </View>
+      <FlatList data={filteredData} renderItem={listItem} />
     </View>
   );
 };
@@ -76,6 +90,20 @@ const styles = StyleSheet.create({
     zIndex: 1,
     left: "95%",
     top: "85%",
+  },
+  searchContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  searchInput: {
+    width: 200,
+    height: 55,
+    borderWidth: 1,
+    borderRadius: 30,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    color: "blue",
   },
 });
 
