@@ -85,11 +85,11 @@ const MyList = () => {
   );
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <Text style={styles.extraInfo}>Loading...</Text>;
   }
 
   if (error) {
-    return <Text>Error: {error}</Text>;
+    return <Text style={styles.extraInfo}>Error: {error}</Text>;
   }
 
   return (
@@ -110,6 +110,11 @@ const MyList = () => {
 };
 
 const styles = StyleSheet.create({
+  extraInfo: {
+    fontSize: 30, 
+    fontWeight: "bold",
+
+  },
   imageContainer: {
     borderWidth: 1,
     borderRadius: 10,
